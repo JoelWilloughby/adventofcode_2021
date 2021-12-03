@@ -17,13 +17,7 @@ fn read_it(filename: &str) -> Nums {
 }
 
 fn count_it(nums: &Vec<usize>, pos: usize) -> (usize, usize) {
-    let mut count = 0;
-
-    for num in nums {
-        if num & (1 << pos) != 0 {
-            count += 1;
-        }
-    }
+    let count = nums.iter().fold(0, |acc, &x| if x & (1 << pos) != 0 {acc + 1} else {acc});
 
     if 2 * count >= nums.len() {
         (0, 1 << pos)
