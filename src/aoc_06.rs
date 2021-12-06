@@ -18,54 +18,55 @@ fn g(n: usize) -> usize {
     }
 }
 
-// Represent a "new" fish
+// Represents a "new" fish, takes 2 longer than an old fish
 fn f(n: usize) -> usize {
-    unsafe {
-        static mut MEMO : [(bool, usize); 300] = [(false,0) ; 300];
-        if n < 9 {
-            return 1;
-        }
-
-        if let (true, res) = MEMO[n] {
-            res
-        } else {
-            let val = g(n - 2);
-            MEMO[n] = (true, val);
-            val
-        }
+    if n < 9 {
+        return 1;
     }
+
+    g(n - 2)
 }
 
 fn fish(n: usize, init_size: usize) -> usize {
     g(n + (6 - init_size))
 }
 
-#[test]
-fn part_0() {
-    for days in 0..20 {
-        let mut acc = 0usize;
-        for val in [3, 4, 3, 1, 2] {
-            acc += fish(days + 1, val);
-        }
-        println!("days: {} -- {}", days + 1, acc);
-    }
+fn read_it(filename: &str) -> [usize; 10] {
+    let mut vals: [usize; 10] = [0; 10];
+    std::fs::read_to_string(filename).unwrap()
+        .trim()
+        .split(",")
+        .filter_map(|s| s.parse().ok())
+        .map(|x: usize| vals[x] += 1).count();
+    vals
 }
 
-fn drive(n: usize) {
+fn drive(filename: &str, n: usize) {
     let mut acc = 0usize;
-    // for val in [3, 4, 3, 1, 2] {
-    for val in [4,3,4,5,2,1,1,5,5,3,3,1,5,1,4,2,2,3,1,5,1,4,1,2,3,4,1,4,1,5,2,1,1,3,3,5,1,1,1,1,4,5,1,2,1,2,1,1,1,5,3,3,1,1,1,1,2,4,2,1,2,3,2,5,3,5,3,1,5,4,5,4,4,4,1,1,2,1,3,1,1,4,2,1,2,1,2,5,4,2,4,2,2,4,2,2,5,1,2,1,2,1,4,4,4,3,2,1,2,4,3,5,1,1,3,4,2,3,3,5,3,1,4,1,1,1,1,2,3,2,1,1,5,5,1,5,2,1,4,4,4,3,2,2,1,2,1,5,1,4,4,1,1,4,1,4,2,4,3,1,4,1,4,2,1,5,1,1,1,3,2,4,1,1,4,1,4,3,1,5,3,3,3,4,1,1,3,1,3,4,1,4,5,1,4,1,2,2,1,3,3,5,3,2,5,1,1,5,1,5,1,4,4,3,1,5,5,2,2,4,1,1,2,1,2,1,4,3,5,5,2,3,4,1,4,2,4,4,1,4,1,1,4,2,4,1,2,1,1,1,1,1,1,3,1,3,3,1,1,1,1,3,2,3,5,4,2,4,3,1,5,3,1,1,1,2,1,4,4,5,1,5,1,1,1,2,2,4,1,4,5,2,4,5,2,2,2,5,4,4] {
-        acc += fish(n, val);
+    let in_vals = read_it(filename);
+
+    for i in 0..10 {
+        if in_vals[i] == 0 {
+            continue;
+        }
+        acc += in_vals[i] * fish(n, i);
     }
     println!("days: {} -- {}", n, acc);
 }
 
 #[test]
+fn part_0() {
+    for days in 0..20 {
+        drive("res/06/sample.txt", days + 1);
+    }
+}
+
+#[test]
 fn part_1() {
-    drive(80);
+    drive("res/06/input.txt", 80);
 }
 
 #[test]
 fn part_2() {
-    drive(256);
+    drive("res/06/input.txt", 256);
 }
