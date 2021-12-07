@@ -29,7 +29,6 @@ fn part_2() {
     }
 
     let mut count = 0usize;
-    let mut window = [nums[0], nums[1], nums[2]];
     let mut last_sum = nums[0] + nums[1] + nums[2];
     for i in 3..nums.len() {
         let current_sum = last_sum - nums[i-3] + nums[i];
