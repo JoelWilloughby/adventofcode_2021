@@ -21,15 +21,12 @@ lazy_static! {
     static ref TWO : HashSet<char>    = ['a',      'c', 'd', 'e',      'g'].iter().cloned().collect();
     static ref THREE : HashSet<char>  = ['a',      'c', 'd',      'f', 'g'].iter().cloned().collect();
     static ref FIVE : HashSet<char>   = ['a', 'b',      'd',      'f', 'g'].iter().cloned().collect();
-
     static ref TWO_X : HashSet<char>  = ['a',      'c', 'd', 'e', 'f', 'g'].iter().cloned().collect();
     static ref FIVE_X : HashSet<char> = ['a', 'b', 'c', 'd',      'f', 'g'].iter().cloned().collect();
-    static ref INT_5 : HashSet<char>  = ['a',           'd',           'g'].iter().cloned().collect();
 
     static ref SIX : HashSet<char>    = ['a', 'b',      'd', 'e', 'f', 'g'].iter().cloned().collect();
     static ref NINE : HashSet<char>   = ['a', 'b', 'c', 'd',      'f', 'g'].iter().cloned().collect();
     static ref ZERO : HashSet<char>   = ['a', 'b', 'c',      'e', 'f', 'g'].iter().cloned().collect();
-    static ref INT_6 : HashSet<char>  = ['a', 'b',                'f', 'g'].iter().cloned().collect();
 
     static ref EIGHT : HashSet<char>  = ['a', 'b', 'c', 'd', 'e', 'f', 'g'].iter().cloned().collect();
 }
@@ -40,7 +37,7 @@ impl Solver {
         let char_set : HashSet<char> = ['a', 'b', 'c', 'd', 'e', 'f', 'g'].iter().cloned().collect();
         ['a', 'b', 'c', 'd', 'e', 'f', 'g'].iter().cloned().map(|c| candidates.insert(c, char_set.clone())).count();
 
-        // Filter on known things
+        // Filter down on numbers that have know wire size
         for s in input.iter() {
             if s.len() > 4 {continue;}
             let filter_set = match s.len() {
@@ -50,18 +47,21 @@ impl Solver {
                 _ => EIGHT.clone()
             };
 
+            // Mark possible values
             s.chars().map(|c| {
                 let i = candidates[&c].intersection(&filter_set).cloned().collect(); candidates.insert(c, i)
             }).count();
+            // Invalidate other values
             EIGHT.difference(&s.chars().collect()).map(|c| {
                 let i = candidates[&c].difference(&filter_set).cloned().collect(); candidates.insert(*c, i)
             }).count();
         }
 
+        // All length 5 numbers have both a d and g wire. Remove d and g from
+        // values that don't appear in length 5 numbers
         for s in input.iter() {
             match s.len() {
                 5 => {
-                    // Gather keys for each necessary thing
                     ['d', 'g'].iter().map(|filter_c| {
                         let keys : HashSet<char> = s.chars().filter(|c| candidates[c].contains(&filter_c)).collect();
                         EIGHT.difference(&keys).map(|c| {
@@ -73,6 +73,8 @@ impl Solver {
             }
         }
 
+        // At this point, we should have some values that are definitely determined,
+        // i.e., the possible set has length one. Remove those from other lists
         let definite_filter : Vec<(char, char)> = candidates.iter().filter(|(_, cc)| cc.len() == 1).map(|(c, cc)| (*c, *cc.iter().next().unwrap())).collect();
         definite_filter.iter().map(|(c, cc)| {
             EIGHT.difference(&[*c].iter().cloned().collect()).map(|a| {
@@ -80,6 +82,9 @@ impl Solver {
             }).count();
         }).count();
 
+        // The only ambiguity remaining is c and f. To get this value, we note
+        // that 2 is the only length 5 number to not have a f wire and 5 is the
+        // only length 5 wire to not have a c wire.
         for s in input.iter() {
             match s.len() {
                 5 => {
@@ -92,6 +97,7 @@ impl Solver {
             }
         }
 
+        // Solution should be found now, just process it into a nice form
         let rev_map : HashMap<char, char> = candidates.iter().map(|(key, val)| (*val.iter().next().unwrap(), *key)).collect();
         let mut decoder = HashMap::new();
         [ZERO.clone(), ONE.clone(), TWO.clone(), THREE.clone(), FOUR.clone(), FIVE.clone(), SIX.clone(), SEVEN.clone(), EIGHT.clone(), NINE.clone()].iter().enumerate().map(|(i, s)| {
@@ -108,9 +114,7 @@ impl Solver {
     fn eval(&self, s: &str) -> usize {
         let mut sorted : Vec<char> = s.chars().collect();
         sorted.sort();
-
         let sorted: String = sorted.into_iter().collect();
-
         self.decoder[&sorted]
     }
 }
@@ -125,8 +129,6 @@ fn read_it(filename: &str) -> Vec<(Vec<String>, Vec<String>)> {
 
 fn drive(filename: &str) {
     let stuff = read_it(filename);
-    println!("{:?}", stuff);
-
     let val = stuff.iter().fold(0, |acc, (_, ts)| acc + ts.iter().filter(|t| [2, 3, 4, 7].contains(&t.len())).count());
     println!("{}", val);
 }
@@ -138,7 +140,6 @@ fn drive_2(filename: &str) {
         let solver = Solver::from_vec(&ss);
 
         let acc = targets.iter().fold(0, |acc, t| 10 * acc + solver.eval(t));
-        println!("{}", acc);
         big_acc += acc;
     }
 
