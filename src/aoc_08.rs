@@ -35,7 +35,7 @@ impl Solver {
     fn from_vec(input: &Vec<String>) -> Self {
         let mut candidates = HashMap::new();
         let char_set : HashSet<char> = ['a', 'b', 'c', 'd', 'e', 'f', 'g'].iter().cloned().collect();
-        ['a', 'b', 'c', 'd', 'e', 'f', 'g'].iter().cloned().map(|c| candidates.insert(c, char_set.clone())).count();
+        ['a', 'b', 'c', 'd', 'e', 'f', 'g'].iter().cloned().for_each(|c| {candidates.insert(c, char_set.clone());});
 
         // Filter down on numbers that have know wire size
         for s in input.iter() {
@@ -48,13 +48,15 @@ impl Solver {
             };
 
             // Mark possible values
-            s.chars().map(|c| {
-                let i = candidates[&c].intersection(&filter_set).cloned().collect(); candidates.insert(c, i)
-            }).count();
+            s.chars().for_each(|c| {
+                let i = candidates[&c].intersection(&filter_set).cloned().collect();
+                candidates.insert(c, i);
+            });
             // Invalidate other values
-            EIGHT.difference(&s.chars().collect()).map(|c| {
-                let i = candidates[&c].difference(&filter_set).cloned().collect(); candidates.insert(*c, i)
-            }).count();
+            EIGHT.difference(&s.chars().collect()).for_each(|c| {
+                let i = candidates[&c].difference(&filter_set).cloned().collect();
+                candidates.insert(*c, i);
+            });
         }
 
         // All length 5 numbers have both a d and g wire. Remove d and g from
@@ -62,12 +64,12 @@ impl Solver {
         for s in input.iter() {
             match s.len() {
                 5 => {
-                    ['d', 'g'].iter().map(|filter_c| {
+                    ['d', 'g'].iter().for_each(|filter_c| {
                         let keys : HashSet<char> = s.chars().filter(|c| candidates[c].contains(&filter_c)).collect();
-                        EIGHT.difference(&keys).map(|c| {
+                        EIGHT.difference(&keys).for_each(|c| {
                             candidates.get_mut(&c).unwrap().remove(&filter_c);
-                        }).count();
-                    }).count();
+                        });
+                    });
                 },
                 _ => {}
             }
@@ -76,11 +78,11 @@ impl Solver {
         // At this point, we should have some values that are definitely determined,
         // i.e., the possible set has length one. Remove those from other lists
         let definite_filter : Vec<(char, char)> = candidates.iter().filter(|(_, cc)| cc.len() == 1).map(|(c, cc)| (*c, *cc.iter().next().unwrap())).collect();
-        definite_filter.iter().map(|(c, cc)| {
-            EIGHT.difference(&[*c].iter().cloned().collect()).map(|a| {
+        definite_filter.iter().for_each(|(c, cc)| {
+            EIGHT.difference(&[*c].iter().cloned().collect()).for_each(|a| {
                 candidates.get_mut(&a).unwrap().remove(cc);
-            }).count();
-        }).count();
+            });
+        });
 
         // The only ambiguity remaining is c and f. To get this value, we note
         // that 2 is the only length 5 number to not have a f wire and 5 is the
@@ -89,9 +91,9 @@ impl Solver {
             match s.len() {
                 5 => {
                     let possible = s.chars().fold(HashSet::new(), |s, c| s.union(&candidates[&c]).cloned().collect());
-                    s.chars().map(|c| {
+                    s.chars().for_each(|c| {
                         candidates.get_mut(&c).unwrap().remove(&if possible == *FIVE_X {'c'} else if possible == *TWO_X {'f'} else {'k'});
-                    }).count();
+                    });
                 },
                 _ => {}
             }
@@ -100,11 +102,11 @@ impl Solver {
         // Solution should be found now, just process it into a nice form
         let rev_map : HashMap<char, char> = candidates.iter().map(|(key, val)| (*val.iter().next().unwrap(), *key)).collect();
         let mut decoder = HashMap::new();
-        [ZERO.clone(), ONE.clone(), TWO.clone(), THREE.clone(), FOUR.clone(), FIVE.clone(), SIX.clone(), SEVEN.clone(), EIGHT.clone(), NINE.clone()].iter().enumerate().map(|(i, s)| {
+        [ZERO.clone(), ONE.clone(), TWO.clone(), THREE.clone(), FOUR.clone(), FIVE.clone(), SIX.clone(), SEVEN.clone(), EIGHT.clone(), NINE.clone()].iter().enumerate().for_each(|(i, s)| {
             let mut st : Vec<char> = s.iter().map(|x| rev_map[x]).collect();
             st.sort();
             decoder.insert(st.into_iter().collect(), i);
-        }).count();
+        });
 
         Self {
             decoder

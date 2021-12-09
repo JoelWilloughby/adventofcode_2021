@@ -5,7 +5,7 @@ fn read_it(filename: &str) -> Vec<Vec<usize>> {
     let mut out = vec![vec![]];
     for line in input.lines() {
         let mut l = vec![std::usize::MAX];
-        line.trim().chars().map(|c| l.push(c as usize - '0' as usize)).count();
+        line.trim().chars().for_each(|c| l.push(c as usize - '0' as usize));
         l.push(std::usize::MAX);
         out.push(l);
     }
@@ -47,7 +47,7 @@ fn bfs(nums: &mut Vec<Vec<usize>>, i: usize, j: usize) -> usize {
         acc += 1;
         nums[i][j] = 9;
         [(i-1, j), (i+1, j), (i, j-1), (i, j+1)].into_iter().filter(|(x, y)| !seen.contains(&(*x, *y)))
-            .map(|(x, y)| frontier.insert((x, y))).count();
+            .for_each(|(x, y)| {frontier.insert((x, y));});
     }
     acc
 }

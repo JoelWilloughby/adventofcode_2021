@@ -37,7 +37,7 @@ fn read_it(filename: &str) -> [usize; 10] {
         .trim()
         .split(",")
         .filter_map(|s| s.parse().ok())
-        .map(|x: usize| vals[x] += 1).count();
+        .for_each(|x: usize| vals[x] += 1);
     vals
 }
 

@@ -24,10 +24,10 @@ impl Bingo {
                 continue;
             }
 
-            line.trim().split_whitespace().map(|x| x.parse::<usize>().unwrap()).enumerate().map(|(i, v)| {
+            line.trim().split_whitespace().map(|x| x.parse::<usize>().unwrap()).enumerate().for_each(|(i, v)| {
                 cells.insert(v, (curr_line, i));
                 drawn.insert(v, false);
-            }).count();
+            });
 
             curr_line += 1;
             if curr_line == 5 {
@@ -83,7 +83,7 @@ fn play(boards: &mut Vec<Bingo>, vals: &Vec<usize>) -> Option<(Bingo, usize)> {
 fn play_2(boards: &mut Vec<Bingo>, vals: &Vec<usize>) -> Option<(Bingo, usize)> {
     let mut boards_list: LinkedList<Bingo> = boards.clone().into_iter().collect();
     for val in vals {
-        boards_list.iter_mut().map(|board| board.draw(*val)).count();
+        boards_list.iter_mut().for_each(|board| {board.draw(*val);});
         if boards_list.len() == 1  && boards_list.front().unwrap().win() {
             return Some((boards_list.front().unwrap().clone(), *val));
         }
