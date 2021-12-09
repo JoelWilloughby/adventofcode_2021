@@ -6,3 +6,4 @@ pub mod aoc_05;
 pub mod aoc_06;
 pub mod aoc_07;
 pub mod aoc_08;
+pub mod aoc_09;
