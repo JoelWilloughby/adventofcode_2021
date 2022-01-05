@@ -1,3 +1,4 @@
+#![feature(drain_filter)]
 pub mod aoc_01;
 pub mod aoc_02;
 pub mod aoc_03;
@@ -19,3 +20,4 @@ pub mod aoc_18;
 
 pub mod aoc_20;
 pub mod aoc_21;
+pub mod aoc_22;
