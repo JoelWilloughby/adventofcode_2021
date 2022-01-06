@@ -50,65 +50,47 @@ impl Cube {
 
         let mut cubes = vec![];
         if self.xs < i_cube.xs {
-            let t = Self {
+            cubes.push(Self {
                 xs: self.xs, xe: i_cube.xs - 1,
                 ..*self
-            };
-            if t.well_formed() {
-                cubes.push(t)
-            };
+            });
         }
         if self.xe > i_cube.xe {
-            let t = Self {
+            cubes.push(Self {
                 xs: i_cube.xe + 1, xe: self.xe,
                 ..*self
-            };
-            if t.well_formed() {
-                cubes.push(t)
-            };
+            });
         }
 
         if self.ys < i_cube.ys {
-            let t = Self {
+            cubes.push(Self {
                 ys: self.ys, ye: i_cube.ys - 1,
                 xs: i_cube.xs, xe: i_cube.xe,
                 ..*self
-            };
-            if t.well_formed() {
-                cubes.push(t)
-            };
+            });
         }
         if self.ye > i_cube.ye {
-            let t = Self {
+            cubes.push(Self {
                 ys: i_cube.ye + 1, ye: self.ye,
                 xs: i_cube.xs, xe: i_cube.xe,
                 ..*self
-            };
-            if t.well_formed() {
-                cubes.push(t)
-            };
+            });
         }
 
         if self.zs < i_cube.zs {
-            let t = Self {
+            cubes.push(Self {
                 zs: self.zs, ze: i_cube.zs - 1,
                 ..i_cube
-            };
-            if t.well_formed() {
-                cubes.push(t)
-            };
+            });
         }
         if self.ze > i_cube.ze {
-            let t = Self {
+            cubes.push(Self {
                 zs: i_cube.ze + 1, ze: self.ze,
                 ..i_cube
-            };
-            if t.well_formed() {
-                cubes.push(t)
-            };
+            });
         }
 
-        cubes
+        cubes.into_iter().filter(|c| c.well_formed()).collect()
     }
 
     pub fn volume(&self) -> usize {
