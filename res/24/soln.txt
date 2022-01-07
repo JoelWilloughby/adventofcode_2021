@@ -1,0 +1,104 @@
+// Pushes input + b
+g(a, b)
+
+// Pops if input + a matches top
+f(a, b)
+
+// There are 7 pushes and 7 (possible, necessary) pops, so just pair them up
+
+// Rough pseudocode
+f(z, w, a, b) {
+    // Grab least sig letter
+    let x = z % 26
+    // Pop letter
+    // g does not pop letter
+    z /= c
+
+    // Shift letter by some amount
+    x += a
+
+    // If input was not shifted value
+    if x != w {
+        // Append a letter? w + some other value
+        return 26 * z + w + b
+    }
+    // If input _was_ shifted value 
+    else {
+        return z
+    }
+}
+
+w = input
+x = z % 26
+z /= 1
+x += 12
+// x = x != w
+if x != w {
+    z = 26 * z + w + 7
+}
+// y = 25 * x + 1 // 1 if x == w
+// z *= y
+// y = x * (w + 7) // 0 if x == w
+// z += y
+
+w = input
+x = z % 26
+z /= 1
+x += 11
+x = x != w
+y = 25 * x + 1
+z *= y
+y = x * (w + 15)
+
+w = input
+x = z % 26
+z /= 1
+x += 12
+x = x != w
+y = 25 * x + 1
+z *= y
+y = x * (w + 2)
+z += y
+
+w = input
+x = z % 26
+z /= 26
+x -= 3
+x = x != w
+y = 25 * x + 1
+z *= y
+y = x * (w + 15)
+z += y
+
+w = input
+x = z % 26
+z /= 1
+x += 10
+x = x != w
+y = 25 * x + 1
+z *= y
+y = x * (w + 14)
+z += y
+
+w = input
+x = z % 26
+z /= 26
+x -= 9
+x = x != w
+y = 25 * x + 1
+z *= y
+y = x * (w + 2)
+z += y
+
+
+
+
+
+w = input
+x = z % 26
+z /= 26
+x -= 10
+y = x == w ? 1 : 26
+z *= y
+y = x * (w + 13)
+z += y
